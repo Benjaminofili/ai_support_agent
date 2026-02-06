@@ -19,11 +19,13 @@
         <div class="relative flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-600 mb-1">Total</p>
-                <p class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <p
+                    class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     {{ stats.total_conversations|default:0 }}
                 </p>
             </div>
-            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div
+                class="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                 <i class="fas fa-comments text-white text-xl"></i>
             </div>
         </div>
@@ -34,11 +36,13 @@
         <div class="relative flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-600 mb-1">Active</p>
-                <p class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                <p
+                    class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                     {{ stats.active_conversations|default:0 }}
                 </p>
             </div>
-            <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div
+                class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
                 <i class="fas fa-bolt text-white text-xl"></i>
             </div>
         </div>
@@ -49,11 +53,13 @@
         <div class="relative flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-600 mb-1">WhatsApp</p>
-                <p class="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                <p
+                    class="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                     {{ stats.whatsapp_conversations|default:0 }}
                 </p>
             </div>
-            <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div
+                class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
                 <i class="fab fa-whatsapp text-white text-xl"></i>
             </div>
         </div>
@@ -64,11 +70,13 @@
         <div class="relative flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-600 mb-1">Web Chat</p>
-                <p class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <p
+                    class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                     {{ stats.web_conversations|default:0 }}
                 </p>
             </div>
-            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div
+                class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                 <i class="fas fa-globe text-white text-xl"></i>
             </div>
         </div>
@@ -106,10 +114,8 @@
     <div class="search-container">
         <div class="search-input-wrapper">
             <i class="fas fa-search"></i>
-            <input type="text" 
-                   id="conversation-search" 
-                   class="search-input" 
-                   placeholder="Search by customer name or ID...">
+            <input type="text" id="conversation-search" class="search-input"
+                placeholder="Search by customer name or ID...">
         </div>
         <select id="status-filter" class="filter-select">
             <option value="all">All Status</option>
@@ -125,9 +131,9 @@
     <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
         <h3 class="text-lg font-semibold text-gray-800">
             {% if current_channel %}
-                {{ current_channel|title }} Conversations
+            {{ current_channel|title }} Conversations
             {% else %}
-                All Conversations
+            All Conversations
             {% endif %}
             (<span id="visible-count">{{ conversations|length }}</span>)
         </h3>
@@ -153,21 +159,19 @@
             </thead>
             <tbody>
                 {% for conv in conversations %}
-                <tr data-conversation-row
-                    data-id="{{ conv.id }}"
+                <tr data-conversation-row data-id="{{ conv.id }}"
                     data-customer-name="{{ conv.customer_name|default:'' }}"
-                    data-customer-id="{{ conv.customer_identifier }}"
-                    data-status="{{ conv.status }}"
+                    data-customer-id="{{ conv.customer_identifier }}" data-status="{{ conv.status }}"
                     data-channel="{{ conv.channel }}">
                     <td data-label="Customer">
                         <div class="customer-cell">
                             <div class="customer-avatar {{ conv.channel }}">
                                 {% if conv.channel == 'whatsapp' %}
-                                    <i class="fab fa-whatsapp"></i>
+                                <i class="fab fa-whatsapp"></i>
                                 {% elif conv.channel == 'web' %}
-                                    <i class="fas fa-user"></i>
+                                <i class="fas fa-user"></i>
                                 {% else %}
-                                    <i class="fas fa-envelope"></i>
+                                <i class="fas fa-envelope"></i>
                                 {% endif %}
                             </div>
                             <div class="customer-info">
@@ -181,18 +185,18 @@
                     <td data-label="Channel">
                         <span class="channel-badge {{ conv.channel }}">
                             {% if conv.channel == 'whatsapp' %}
-                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            <i class="fab fa-whatsapp"></i> WhatsApp
                             {% elif conv.channel == 'web' %}
-                                <i class="fas fa-globe"></i> Web Chat
+                            <i class="fas fa-globe"></i> Web Chat
                             {% else %}
-                                <i class="fas fa-envelope"></i> Email
+                            <i class="fas fa-envelope"></i> Email
                             {% endif %}
                         </span>
                     </td>
                     <td data-label="Messages">
                         <span class="message-count">
                             <i class="fas fa-comment"></i>
-                            {{ conv.messages.count }}
+                            {{ conv.num_messages }}
                         </span>
                     </td>
                     <td data-label="Status">
@@ -205,16 +209,11 @@
                     </td>
                     <td data-label="Actions">
                         <div class="flex items-center gap-2">
-                            <a href="{% url 'dashboard:conversation_detail' conv.id %}" 
-                               class="action-btn view">
+                            <a href="{% url 'dashboard:conversation_detail' conv.id %}" class="action-btn view">
                                 <i class="fas fa-eye"></i>
                                 <span class="hidden sm:inline">View</span>
                             </a>
-                            <button onclick="viewConversation('{{ conv.id }}')" 
-                                    class="action-btn view"
-                                    title="Quick View">
-                                <i class="fas fa-expand"></i>
-                            </button>
+
                         </div>
                     </td>
                 </tr>
@@ -230,9 +229,9 @@
         <h3 class="conversations-empty-title">No conversations yet</h3>
         <p class="conversations-empty-text">
             {% if current_channel %}
-                No {{ current_channel }} conversations found.
+            No {{ current_channel }} conversations found.
             {% else %}
-                Start chatting via WhatsApp or the web widget to see conversations here.
+            Start chatting via WhatsApp or the web widget to see conversations here.
             {% endif %}
         </p>
         <div class="conversations-empty-actions">
@@ -252,7 +251,9 @@
 </div>
 
 <!-- Conversation Detail Modal -->
-<div id="conversation-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden items-center justify-center z-50" onclick="closeConversationModal()">
+<div id="conversation-modal"
+    class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden items-center justify-center z-50"
+    onclick="closeConversationModal()">
     <div id="conversation-modal-content" class="conversation-detail-content" onclick="event.stopPropagation()">
         <!-- Content will be loaded dynamically -->
     </div>

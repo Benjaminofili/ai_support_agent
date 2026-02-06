@@ -166,7 +166,7 @@ def dashboard(request: HttpRequest):
                 queryset=Message.objects.order_by("-created_at")[:5]
             )
         )
-        .annotate(message_count=Count("messages"))
+        .annotate(num_messages=Count("messages"))
         .order_by("-updated_at")[:10]
     )
 
@@ -301,7 +301,7 @@ def demo_dashboard(request: HttpRequest):
                 queryset=Message.objects.order_by("-created_at")[:1]
             )
         )
-        .annotate(message_count=Count("messages"))
+        .annotate(num_messages=Count("messages"))
         .order_by("-updated_at")[:5]
     )
 
@@ -330,7 +330,7 @@ def conversations_list(request: HttpRequest):
     ).select_related("company").prefetch_related(
         "messages"
     ).annotate(
-        message_count=Count("messages")
+        num_messages=Count("messages")
     ).order_by("-updated_at")
 
     if channel:

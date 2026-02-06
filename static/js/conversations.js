@@ -384,9 +384,7 @@
     // ===========================================
     
     function viewConversation(conversationId) {
-        if (window.conversationsManager) {
-            window.conversationsManager.openConversation(conversationId);
-        }
+        window.location.href = `/dashboard/conversations/${conversationId}/`;
     }
 
     function deleteConversation(conversationId) {

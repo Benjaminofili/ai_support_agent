@@ -1,0 +1,196 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Conversation Details - AI Support Dashboard{% endblock %}
+
+{% block page_title %}Conversation Details{% endblock %}
+
+{% block page_description %}View message history and conversation status{% endblock %}
+
+{% block extra_css %}
+<style>
+    .message-bubble {
+        max-width: 80%;
+        position: relative;
+    }
+
+    .message-bubble.customer {
+        background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+        color: #1e3a8a;
+        margin-right: auto;
+        border-bottom-left-radius: 4px;
+    }
+
+    .message-bubble.assistant {
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        color: #581c87;
+        margin-left: auto;
+        border-bottom-right-radius: 4px;
+    }
+
+    .message-bubble.system {
+        background-color: #f3f4f6;
+        color: #4b5563;
+        margin: 1rem auto;
+        text-align: center;
+        font-size: 0.875rem;
+        border-radius: 1rem;
+        padding: 0.5rem 1.5rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .chat-container {
+        height: calc(100vh - 300px);
+        min-height: 500px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Actions -->
+<div class="flex items-center justify-between mb-6">
+    <a href="{% url 'dashboard:conversations' %}"
+        class="flex items-center text-gray-600 hover:text-purple-600 transition-colors">
+        <div class="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center mr-2">
+            <i class="fas fa-arrow-left text-sm"></i>
+        </div>
+        <span class="font-medium">Back to Conversations</span>
+    </a>
+
+    <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-full text-sm font-medium 
+            {% if conversation.status == 'active' %}bg-green-100 text-green-700
+            {% elif conversation.status == 'resolved' %}bg-gray-100 text-gray-700
+            {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+            {{ conversation.status|title }}
+        </span>
+        <button onclick="location.reload()"
+            class="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-600 hover:text-purple-600 transition-colors">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Chat Area -->
+    <div class="lg:col-span-2 glass rounded-2xl shadow-xl overflow-hidden flex flex-col">
+        <div class="p-4 border-b border-gray-200 bg-white/50 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center shadow-inner mr-3
+                    {% if conversation.channel == 'whatsapp' %}bg-green-100 text-green-600
+                    {% elif conversation.channel == 'web' %}bg-blue-100 text-blue-600
+                    {% else %}bg-orange-100 text-orange-600{% endif %}">
+                    {% if conversation.channel == 'whatsapp' %}<i class="fab fa-whatsapp text-lg"></i>
+                    {% elif conversation.channel == 'web' %}<i class="fas fa-globe text-lg"></i>
+                    {% else %}<i class="fas fa-envelope text-lg"></i>{% endif %}
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800">
+                        {{ conversation.customer_name|default:conversation.customer_identifier|truncatechars:30 }}</h3>
+                    <p class="text-xs text-gray-500 flex items-center">
+                        <i class="far fa-clock mr-1"></i> Started {{ conversation.created_at|date:"M d, Y H:i" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-container overflow-y-auto p-6 space-y-4 bg-gray-50/50" id="chat-messages">
+            {% for message in messages %}
+            {% if message.role == 'system' %}
+            <div class="message-bubble system">
+                <i class="fas fa-info-circle mr-1"></i>
+                {{ message.content }}
+            </div>
+            {% else %}
+            <div class="flex flex-col {% if message.role == 'assistant' %}items-end{% else %}items-start{% endif %}">
+                <div class="message-bubble {{ message.role }} p-4 rounded-2xl shadow-sm text-sm leading-relaxed">
+                    {{ message.content|linebreaksbr }}
+                </div>
+                <span class="text-xs text-gray-400 mt-1 px-1">
+                    {{ message.role|title }} • {{ message.created_at|time:"H:i" }}
+                </span>
+            </div>
+            {% endif %}
+            {% empty %}
+            <div class="flex flex-col items-center justify-center h-full text-gray-400">
+                <i class="far fa-comments text-4xl mb-2"></i>
+                <p>No messages in this conversation yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Info Sidebar -->
+    <div class="space-y-6">
+        <!-- Customer Info -->
+        <div class="glass rounded-2xl shadow-xl p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+                Customer Details
+            </h3>
+
+            <div class="space-y-4">
+                <div>
+                    <p class="text-sm text-gray-500 mb-1">Identifier</p>
+                    <div class="flex items-center justify-between p-2 bg-white/50 rounded-lg border border-gray-100">
+                        <code class="text-xs text-purple-700 break-all">{{ conversation.customer_identifier }}</code>
+                    </div>
+                </div>
+
+                {% if conversation.customer_name %}
+                <div>
+                    <p class="text-sm text-gray-500 mb-1">Name</p>
+                    <p class="font-medium text-gray-800">{{ conversation.customer_name }}</p>
+                </div>
+                {% endif %}
+
+                <div>
+                    <p class="text-sm text-gray-500 mb-1">Channel</p>
+                    <div class="flex items-center">
+                        <span class="px-2 py-1 rounded text-xs font-semibold
+                            {% if conversation.channel == 'whatsapp' %}bg-green-100 text-green-700
+                            {% elif conversation.channel == 'web' %}bg-blue-100 text-blue-700
+                            {% else %}bg-orange-100 text-orange-700{% endif %}">
+                            {{ conversation.channel|upper }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meta Info -->
+        <div class="glass rounded-2xl shadow-xl p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+                Conversation Info
+            </h3>
+
+            <div class="space-y-3">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-500">ID</span>
+                    <span class="text-gray-700 font-mono text-xs" title="{{ conversation.id }}">
+                        {{conversation.id|truncatechars:8 }}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-500">Messages</span>
+                    <span class="font-semibold text-gray-800">{{ messages.count }}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-500">Last Active</span>
+                    <span class="text-gray-800">{{ conversation.updated_at|timesince }} ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Scroll to bottom of chat
+    document.addEventListener('DOMContentLoaded', function () {
+        const chatContainer = document.getElementById('chat-messages');
+        if (chatContainer) {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    });
+</script>
+{% endblock %}
