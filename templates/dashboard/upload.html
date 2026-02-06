@@ -1,0 +1,122 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Upload Documents - AI Support Dashboard{% endblock %}
+
+{% block page_title %}Knowledge Base{% endblock %}
+
+{% block page_description %}Upload and manage documents for AI-powered responses{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/upload.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <!-- Upload Card -->
+    <div class="glass rounded-2xl shadow-xl p-6 mb-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-6">Upload Document</h3>
+        
+        <!-- Tab Switcher -->
+        <div class="upload-tabs">
+            <button type="button" class="upload-tab active" data-upload-tab="file">
+                <i class="fas fa-file-upload mr-2"></i>Upload File
+            </button>
+            <button type="button" class="upload-tab" data-upload-tab="paste">
+                <i class="fas fa-paste mr-2"></i>Paste Content
+            </button>
+        </div>
+
+        <form id="upload-form">
+            <!-- File Upload Tab -->
+            <div class="upload-tab-content active" data-tab-content="file">
+                <!-- Upload Zone -->
+                <div id="upload-zone" class="upload-zone">
+                    <div class="upload-zone-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h4 class="upload-zone-title">Drop your file here</h4>
+                    <p class="upload-zone-text">or click to browse from your computer</p>
+                    <div class="upload-zone-formats">
+                        <span class="format-badge">PDF</span>
+                        <span class="format-badge">DOCX</span>
+                        <span class="format-badge">TXT</span>
+                        <span class="format-badge">CSV</span>
+                        <span class="format-badge">JSON</span>
+                        <span class="format-badge">MD</span>
+                    </div>
+                </div>
+                
+                <input type="file" 
+                       id="file-input" 
+                       class="hidden" 
+                       accept=".pdf,.docx,.txt,.csv,.json,.md,.markdown">
+                
+                <!-- File Preview -->
+                <div id="file-preview" style="display: none;"></div>
+            </div>
+
+            <!-- Paste Content Tab -->
+            <div class="upload-tab-content" data-tab-content="paste">
+                <div class="upload-form-group">
+                    <label class="upload-label" for="document-content">
+                        Content <span class="required">*</span>
+                    </label>
+                    <textarea id="document-content" 
+                              class="upload-input upload-textarea" 
+                              placeholder="Paste your text content here..."></textarea>
+                </div>
+            </div>
+
+            <!-- Title Input (Common) -->
+            <div class="upload-form-group mt-6">
+                <label class="upload-label" for="document-title">
+                    Document Title <span class="required">*</span>
+                </label>
+                <input type="text" 
+                       id="document-title" 
+                       class="upload-input" 
+                       placeholder="Enter a title for this document"
+                       required>
+            </div>
+
+            <!-- Progress Bar -->
+            <div id="upload-progress" class="upload-progress">
+                <div class="progress-bar">
+                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                </div>
+                <p id="progress-text" class="progress-text">Uploading...</p>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submit-btn" class="upload-submit">
+                <i class="fas fa-upload"></i>
+                <span id="submit-text">Upload Document</span>
+                <i id="submit-spinner" class="fas fa-spinner spinner hidden"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Documents List -->
+    <div class="glass rounded-2xl shadow-xl p-6 documents-section">
+        <div class="documents-header">
+            <h3 class="documents-title">Your Documents</h3>
+            <span id="documents-count" class="documents-count">0</span>
+        </div>
+        
+        <div id="documents-list" class="documents-list">
+            <!-- Loading state -->
+            <div class="documents-empty">
+                <div class="documents-empty-icon">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <p class="documents-empty-text">Loading documents...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/upload.js' %}"></script>
+{% endblock %}

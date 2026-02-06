@@ -1,0 +1,608 @@
+/* ===========================================
+   Conversations Page Specific Styles
+   =========================================== */
+
+/* ===========================================
+   Stats Cards
+   =========================================== */
+.stats-card-mini {
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card-mini .decoration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6rem;
+    height: 6rem;
+    border-radius: 50%;
+    margin-right: -3rem;
+    margin-top: -3rem;
+    opacity: 0.2;
+}
+
+/* ===========================================
+   Channel Filter Tabs
+   =========================================== */
+.channel-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.channel-tab {
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.channel-tab:hover {
+    transform: scale(1.05);
+}
+
+.channel-tab.active {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.channel-tab.all.active {
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    color: white;
+}
+
+.channel-tab.whatsapp.active {
+    background: linear-gradient(to right, #22c55e, #10b981);
+    color: white;
+}
+
+.channel-tab.web.active {
+    background: linear-gradient(to right, #3b82f6, #6366f1);
+    color: white;
+}
+
+.channel-tab.email.active {
+    background: linear-gradient(to right, #8b5cf6, #ec4899);
+    color: white;
+}
+
+.channel-tab:not(.active) {
+    background: rgba(255, 255, 255, 0.5);
+    color: #374151;
+}
+
+.channel-tab:not(.active):hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+/* ===========================================
+   Conversations Table
+   =========================================== */
+.conversations-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.conversations-table thead {
+    background: #f9fafb;
+}
+
+.conversations-table th {
+    padding: 0.75rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.conversations-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.conversations-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.conversations-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.conversations-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===========================================
+   Customer Cell
+   =========================================== */
+.customer-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.customer-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.customer-avatar.whatsapp {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.customer-avatar.web {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.customer-avatar.email {
+    background: #f3e8ff;
+    color: #9333ea;
+}
+
+.customer-info {
+    min-width: 0;
+}
+
+.customer-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.customer-id {
+    font-size: 0.75rem;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ===========================================
+   Channel Badge
+   =========================================== */
+.channel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.channel-badge.whatsapp {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.channel-badge.web {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.channel-badge.email {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+/* ===========================================
+   Status Badge
+   =========================================== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.active::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse-dot 2s infinite;
+}
+
+.status-badge.resolved {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.escalated {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ===========================================
+   Message Count
+   =========================================== */
+.message-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.message-count i {
+    color: #9ca3af;
+}
+
+/* ===========================================
+   Time Cell
+   =========================================== */
+.time-cell {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* ===========================================
+   Action Buttons
+   =========================================== */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.action-btn.view {
+    color: #2563eb;
+}
+
+.action-btn.view:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.action-btn.delete {
+    color: #dc2626;
+}
+
+.action-btn.delete:hover {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+/* ===========================================
+   Empty State
+   =========================================== */
+.conversations-empty {
+    padding: 3rem;
+    text-align: center;
+}
+
+.conversations-empty-icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1rem;
+    background: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.conversations-empty-icon i {
+    font-size: 1.5rem;
+    color: #9ca3af;
+}
+
+.conversations-empty-title {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #111827;
+    margin-bottom: 0.25rem;
+}
+
+.conversations-empty-text {
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.conversations-empty-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* ===========================================
+   Conversation Detail Modal
+   =========================================== */
+.conversation-detail-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.conversation-detail-modal.show {
+    display: flex;
+}
+
+.conversation-detail-content {
+    background: white;
+    border-radius: 1rem;
+    max-width: 48rem;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.conversation-detail-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.conversation-detail-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+.conversation-detail-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+/* ===========================================
+   Message Bubbles
+   =========================================== */
+.messages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message-bubble {
+    max-width: 80%;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    position: relative;
+}
+
+.message-bubble.customer {
+    align-self: flex-start;
+    background: #f3f4f6;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.message-bubble.ai {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.message-bubble.human {
+    align-self: flex-end;
+    background: #10b981;
+    color: white;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.message-content {
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.message-time {
+    font-size: 0.625rem;
+    margin-top: 0.375rem;
+    opacity: 0.7;
+}
+
+.message-bubble.customer .message-time {
+    color: #6b7280;
+}
+
+/* ===========================================
+   Search and Filters
+   =========================================== */
+.search-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-input-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+.search-input-wrapper i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.filter-select {
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+/* ===========================================
+   Responsive
+   =========================================== */
+@media (max-width: 768px) {
+    .conversations-table {
+        display: block;
+    }
+
+    .conversations-table thead {
+        display: none;
+    }
+
+    .conversations-table tbody {
+        display: block;
+    }
+
+    .conversations-table tr {
+        display: block;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .conversations-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border: none;
+    }
+
+    .conversations-table td::before {
+        content: attr(data-label);
+        font-weight: 500;
+        color: #6b7280;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    .customer-cell {
+        width: 100%;
+    }
+}
+
+/* ===========================================
+   Loading Skeleton
+   =========================================== */
+.conversation-skeleton {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.conversation-skeleton .skeleton-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+.conversation-skeleton .skeleton-content {
+    flex: 1;
+    margin-left: 0.75rem;
+}
+
+.conversation-skeleton .skeleton-line {
+    height: 0.75rem;
+    border-radius: 0.25rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+.conversation-skeleton .skeleton-line.short {
+    width: 40%;
+    margin-top: 0.5rem;
+}
+
+.conversation-skeleton .skeleton-line.medium {
+    width: 60%;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}

@@ -1,0 +1,264 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Conversations - AI Support Dashboard{% endblock %}
+
+{% block page_title %}Conversations{% endblock %}
+
+{% block page_description %}View and manage customer conversations{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/conversations.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="card-hover glass rounded-2xl shadow-xl p-6 stats-card-mini">
+        <div class="decoration bg-gradient-to-br from-blue-400 to-purple-500"></div>
+        <div class="relative flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600 mb-1">Total</p>
+                <p class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    {{ stats.total_conversations|default:0 }}
+                </p>
+            </div>
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                <i class="fas fa-comments text-white text-xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-hover glass rounded-2xl shadow-xl p-6 stats-card-mini">
+        <div class="decoration bg-gradient-to-br from-emerald-400 to-teal-500"></div>
+        <div class="relative flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600 mb-1">Active</p>
+                <p class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                    {{ stats.active_conversations|default:0 }}
+                </p>
+            </div>
+            <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                <i class="fas fa-bolt text-white text-xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-hover glass rounded-2xl shadow-xl p-6 stats-card-mini">
+        <div class="decoration bg-gradient-to-br from-green-400 to-emerald-500"></div>
+        <div class="relative flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600 mb-1">WhatsApp</p>
+                <p class="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                    {{ stats.whatsapp_conversations|default:0 }}
+                </p>
+            </div>
+            <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                <i class="fab fa-whatsapp text-white text-xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-hover glass rounded-2xl shadow-xl p-6 stats-card-mini">
+        <div class="decoration bg-gradient-to-br from-blue-400 to-indigo-500"></div>
+        <div class="relative flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600 mb-1">Web Chat</p>
+                <p class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                    {{ stats.web_conversations|default:0 }}
+                </p>
+            </div>
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <i class="fas fa-globe text-white text-xl"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Channel Filter Tabs -->
+<div class="glass rounded-2xl shadow-xl mb-6 p-4">
+    <div class="channel-tabs">
+        <a href="{% url 'dashboard:conversations' %}"
+            class="channel-tab all {% if not current_channel %}active{% endif %}">
+            <i class="fas fa-layer-group"></i>
+            All ({{ stats.total_conversations|default:0 }})
+        </a>
+        <a href="{% url 'dashboard:conversations' %}?channel=whatsapp"
+            class="channel-tab whatsapp {% if current_channel == 'whatsapp' %}active{% endif %}">
+            <i class="fab fa-whatsapp"></i>
+            WhatsApp ({{ stats.whatsapp_conversations|default:0 }})
+        </a>
+        <a href="{% url 'dashboard:conversations' %}?channel=web"
+            class="channel-tab web {% if current_channel == 'web' %}active{% endif %}">
+            <i class="fas fa-globe"></i>
+            Web Chat ({{ stats.web_conversations|default:0 }})
+        </a>
+        <a href="{% url 'dashboard:conversations' %}?channel=email"
+            class="channel-tab email {% if current_channel == 'email' %}active{% endif %}">
+            <i class="fas fa-envelope"></i>
+            Email ({{ stats.email_conversations|default:0 }})
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="glass rounded-2xl shadow-xl mb-6 p-4">
+    <div class="search-container">
+        <div class="search-input-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" 
+                   id="conversation-search" 
+                   class="search-input" 
+                   placeholder="Search by customer name or ID...">
+        </div>
+        <select id="status-filter" class="filter-select">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="resolved">Resolved</option>
+            <option value="pending">Pending</option>
+        </select>
+    </div>
+</div>
+
+<!-- Conversations List -->
+<div class="glass rounded-2xl shadow-xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-800">
+            {% if current_channel %}
+                {{ current_channel|title }} Conversations
+            {% else %}
+                All Conversations
+            {% endif %}
+            (<span id="visible-count">{{ conversations|length }}</span>)
+        </h3>
+        {% if conversations %}
+        <button onclick="location.reload()" class="text-sm text-purple-600 hover:text-purple-800 font-medium">
+            <i class="fas fa-sync-alt mr-1"></i> Refresh
+        </button>
+        {% endif %}
+    </div>
+
+    {% if conversations %}
+    <div class="overflow-x-auto">
+        <table class="conversations-table">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Channel</th>
+                    <th>Messages</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conv in conversations %}
+                <tr data-conversation-row
+                    data-id="{{ conv.id }}"
+                    data-customer-name="{{ conv.customer_name|default:'' }}"
+                    data-customer-id="{{ conv.customer_identifier }}"
+                    data-status="{{ conv.status }}"
+                    data-channel="{{ conv.channel }}">
+                    <td data-label="Customer">
+                        <div class="customer-cell">
+                            <div class="customer-avatar {{ conv.channel }}">
+                                {% if conv.channel == 'whatsapp' %}
+                                    <i class="fab fa-whatsapp"></i>
+                                {% elif conv.channel == 'web' %}
+                                    <i class="fas fa-user"></i>
+                                {% else %}
+                                    <i class="fas fa-envelope"></i>
+                                {% endif %}
+                            </div>
+                            <div class="customer-info">
+                                <div class="customer-name">
+                                    {{ conv.customer_name|default:conv.customer_identifier|truncatechars:30 }}
+                                </div>
+                                <div class="customer-id">{{ conv.customer_identifier|truncatechars:25 }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td data-label="Channel">
+                        <span class="channel-badge {{ conv.channel }}">
+                            {% if conv.channel == 'whatsapp' %}
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            {% elif conv.channel == 'web' %}
+                                <i class="fas fa-globe"></i> Web Chat
+                            {% else %}
+                                <i class="fas fa-envelope"></i> Email
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td data-label="Messages">
+                        <span class="message-count">
+                            <i class="fas fa-comment"></i>
+                            {{ conv.messages.count }}
+                        </span>
+                    </td>
+                    <td data-label="Status">
+                        <span class="status-badge {{ conv.status }}">
+                            {{ conv.status|title }}
+                        </span>
+                    </td>
+                    <td data-label="Last Updated" class="time-cell">
+                        {{ conv.updated_at|timesince }} ago
+                    </td>
+                    <td data-label="Actions">
+                        <div class="flex items-center gap-2">
+                            <a href="{% url 'dashboard:conversation_detail' conv.id %}" 
+                               class="action-btn view">
+                                <i class="fas fa-eye"></i>
+                                <span class="hidden sm:inline">View</span>
+                            </a>
+                            <button onclick="viewConversation('{{ conv.id }}')" 
+                                    class="action-btn view"
+                                    title="Quick View">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="conversations-empty">
+        <div class="conversations-empty-icon">
+            <i class="fas fa-comments"></i>
+        </div>
+        <h3 class="conversations-empty-title">No conversations yet</h3>
+        <p class="conversations-empty-text">
+            {% if current_channel %}
+                No {{ current_channel }} conversations found.
+            {% else %}
+                Start chatting via WhatsApp or the web widget to see conversations here.
+            {% endif %}
+        </p>
+        <div class="conversations-empty-actions">
+            <a href="{% url 'dashboard:chat_widget' %}" target="_blank"
+                class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition shadow-lg">
+                <i class="fas fa-comment-dots mr-2"></i>Open Chat Widget
+            </a>
+            {% if current_channel %}
+            <a href="{% url 'dashboard:conversations' %}"
+                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                View All Channels
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Conversation Detail Modal -->
+<div id="conversation-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden items-center justify-center z-50" onclick="closeConversationModal()">
+    <div id="conversation-modal-content" class="conversation-detail-content" onclick="event.stopPropagation()">
+        <!-- Content will be loaded dynamically -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/conversations.js' %}"></script>
+{% endblock %}

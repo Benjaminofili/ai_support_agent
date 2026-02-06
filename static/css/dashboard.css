@@ -1,0 +1,261 @@
+/* ===========================================
+   Dashboard Page Specific Styles
+   =========================================== */
+
+/* ===========================================
+   Stats Cards
+   =========================================== */
+.stats-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card .decoration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8rem;
+    height: 8rem;
+    border-radius: 50%;
+    margin-right: -4rem;
+    margin-top: -4rem;
+    opacity: 0.2;
+}
+
+.stats-card .counter {
+    font-size: 2.25rem;
+    font-weight: 700;
+    background: linear-gradient(to right, var(--gradient-from), var(--gradient-to));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Gradient variations */
+.stats-card.blue {
+    --gradient-from: #3b82f6;
+    --gradient-to: #8b5cf6;
+}
+
+.stats-card.green {
+    --gradient-from: #059669;
+    --gradient-to: #14b8a6;
+}
+
+.stats-card.purple {
+    --gradient-from: #8b5cf6;
+    --gradient-to: #ec4899;
+}
+
+.stats-card.orange {
+    --gradient-from: #ea580c;
+    --gradient-to: #dc2626;
+}
+
+/* ===========================================
+   Charts Container
+   =========================================== */
+.chart-container {
+    position: relative;
+    min-height: 250px;
+}
+
+.chart-container canvas {
+    max-width: 100%;
+}
+
+/* ===========================================
+   Conversation List
+   =========================================== */
+.conversation-item {
+    transition: all 0.2s ease;
+}
+
+.conversation-item:hover {
+    background: linear-gradient(to right, #eff6ff, #f5f3ff);
+}
+
+.conversation-avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+}
+
+.conversation-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.conversation-status.active {
+    background: linear-gradient(to right, #4ade80, #10b981);
+    color: white;
+}
+
+.conversation-status.closed {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+/* ===========================================
+   Quick Actions
+   =========================================== */
+.quick-action {
+    display: block;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.quick-action:hover {
+    transform: scale(1.02);
+}
+
+.quick-action-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* ===========================================
+   System Status
+   =========================================== */
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.status-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-icon.operational {
+    background: linear-gradient(135deg, #4ade80 0%, #10b981 100%);
+}
+
+.status-icon.warning {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.status-icon.error {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+}
+
+/* ===========================================
+   Modal Styles
+   =========================================== */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-backdrop.show {
+    display: flex;
+}
+
+.modal-content {
+    max-width: 28rem;
+    width: 100%;
+    margin: 1rem;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.75rem;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.modal-input::placeholder {
+    color: #9ca3af;
+}
+
+.modal-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5);
+    border-color: transparent;
+}
+
+/* ===========================================
+   Channel Icons
+   =========================================== */
+.channel-icon {
+    font-size: 0.875rem;
+}
+
+.channel-icon.web {
+    color: #3b82f6;
+}
+
+.channel-icon.whatsapp {
+    color: #22c55e;
+}
+
+.channel-icon.email {
+    color: #8b5cf6;
+}
+
+/* ===========================================
+   Empty State
+   =========================================== */
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+    color: #6b7280;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: #d1d5db;
+    margin-bottom: 0.75rem;
+}
+
+/* ===========================================
+   Loading State
+   =========================================== */
+.loading-state {
+    padding: 2rem;
+    text-align: center;
+    color: #6b7280;
+}
+
+.loading-spinner {
+    font-size: 1.875rem;
+    margin-bottom: 0.75rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

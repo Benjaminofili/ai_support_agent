@@ -1,0 +1,72 @@
+# Environment
+.env
+.env.local
+.env.production
+.env.*
+!.env.example
+
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+env/
+
+# Django
+*.log
+logs/
+db.sqlite3
+staticfiles/
+media/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+celerybeat-schedule.db
+
+# Secrets
+*.pem
+*.key
+secrets/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Misc
+*.bak
+*.tmp
+*.temp
+
+# Local Binaries
+ngrok.exe
+
+# Test Artifacts
+test_output.txt
+test_result.txt
+test_ssl_result.txt
+email_test_*.html

@@ -1,0 +1,16 @@
+{
+  "company": {
+    "name": "Example Corp",
+    "founded": 2020,
+    "headquarters": "New York, NY"
+  },
+  "products": [
+    {"name": "Widget Pro", "price": 99.99},
+    {"name": "Widget Basic", "price": 49.99}
+  ],
+  "support": {
+    "email": "help@example.com",
+    "phone": "1-800-555-0199",
+    "hours": "24/7"
+  }
+}
