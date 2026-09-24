@@ -1,208 +1,189 @@
-# Ai_support_agent
+# AI Support Agent
 
-![License](https://img.shields.io/github/license/Benjaminofili/ai_support_agent)
-![Stars](https://img.shields.io/github/stars/Benjaminofili/ai_support_agent?style=social)
-![Issues](https://img.shields.io/github/issues/Benjaminofili/ai_support_agent)
+A multi-tenant, B2B customer support platform that answers customers using **only your company's own documents** — via Retrieval-Augmented Generation (RAG), not fine-tuning. Companies upload their docs (PDF, DOCX, CSV, JSON, Markdown, plain text), and the agent answers customer questions over **Website Chat, WhatsApp, and Email** using that knowledge base.
 
-This project is a Django-based AI support agent that utilizes various APIs for AI model integration, messaging, and email services. It is built with dependencies such as OpenAI, Twilio, and Resend, and includes features like Docker and testing.
+Built with Django + django-ninja, backed by Postgres/pgvector for vector search and Celery/Redis for async processing. Designed to run on free-tier AI services: **Groq** for chat completions and a local **sentence-transformers** model for embeddings (no OpenAI billing required).
 
-## Quick Start
-```bash
-pip install -r requirements.txt && python manage.py runserver
+## How it works
+
+```
+Customer question (Web / WhatsApp / Email)
+        │
+        ▼
+Embed question locally (sentence-transformers, 384-dim)
+        │
+        ▼
+Cosine-similarity search over that company's DocumentChunks
+        │
+        ▼
+Inject top-k matching chunks into a system prompt
+        │
+        ▼
+Groq (Llama 3.1 8B Instant) generates the answer
+        │
+        ▼
+Reply sent back over the originating channel
 ```
 
-## ✨ Highlights
-- Utilizes OpenAI API for AI model integration
-- Integrates Twilio for WhatsApp messaging
-- Uses Resend for email services
-- Includes Docker support for easy deployment
+Every document, conversation, and message is scoped to a `Company`, so one deployment can serve many tenants with strict data isolation.
 
-## ✨ Features
+## Features
 
-Based on the actual dependencies and code, the following features are available in Ai_support_agent:
-- **Django Integration** - Utilizes the Django framework for building the application
-- **Database Support** - Uses PostgreSQL as the database management system
-- **Redis Caching** - Employs Redis for caching and improving performance
-- **OpenAI API Integration** - Leverages the OpenAI API for AI-related functionality
-- **Groq API Integration** - Integrates with the Groq API for additional AI capabilities
-- **Twilio WhatsApp Support** - Enables WhatsApp messaging through Twilio
-- **Email Sending** - Supports sending emails via SMTP with Resend and Gmail
-- **Automated Testing** - Includes tests for ensuring application reliability
-- **Docker Containerization** - Allows for containerization using Docker
+- **Multi-channel support** — website chat widget, WhatsApp (via Twilio), and inbound/outbound email
+- **Document ingestion** — PDF, DOCX, TXT, CSV, JSON, Markdown, and pasted text, chunked and embedded asynchronously via Celery
+- **RAG-based answers** — responses are grounded in the company's own knowledge base, with a graceful "I don't know" fallback instead of hallucinating
+- **Multi-tenancy** — every company gets an isolated knowledge base, conversation history, and API key
+- **Dashboard** — login/signup, document upload, conversation history viewer, and settings, all server-rendered with Django templates
+- **REST API** — documented with Swagger UI at `/api/docs`, authenticated via per-company Bearer API keys
+- **Health check endpoint** — `/health/` reports database and Redis connectivity for monitoring
+- **Free-tier friendly** — Groq for LLM calls and a local embedding model mean you can run this without an OpenAI budget; an OpenAI fallback path exists if you'd rather use it
 
-## 🛠️ Tech Stack
+## Tech stack
 
-| Category | Technology |
-|----------|------------|
-| Framework | Django |
-| Language | Python |
-| Database | PostgreSQL |
-| Cache | Redis |
-| AI/ML | OpenAI, Groq |
+| Layer | Technology |
+|---|---|
+| Framework | Django 5 + django-ninja (REST API + OpenAPI docs) |
+| Database | PostgreSQL + pgvector |
+| Task queue | Celery + Redis |
+| LLM | Groq (`llama-3.1-8b-instant`), OpenAI fallback |
+| Embeddings | `sentence-transformers/all-MiniLM-L6-v2` (local, 384-dim) |
 | Messaging | Twilio (WhatsApp) |
-| Email | SMTP (Gmail) |
+| Email | SMTP (Gmail) with Resend as a backup provider |
+| Document parsing | pypdf, python-docx |
+| Testing | pytest, pytest-django, factory-boy |
 
-## 🚀 Installation
+## Project layout
 
-The Ai_support_agent project is built using Django and Python. To get started, follow these steps:
+```
+apps/
+├── companies/       # Multi-tenancy, auth, dashboard views
+├── knowledge/       # Document upload, chunking, embeddings
+├── conversations/   # Chat API, RAG logic (Groq + local embeddings)
+└── channels/        # WhatsApp & email webhooks
+config/              # Django settings, URLs, Celery config
+templates/           # Dashboard, auth, and chat widget templates
+tests/               # pytest suite (email flow, Gmail, factories)
+```
+
+See [TECHNICAL_SPEC.md](TECHNICAL_SPEC.md) for the full architecture write-up, database schema, and day-by-day build log.
+
+## Getting started
 
 ### Prerequisites
-- Python
-- pip
+- Python 3.11+
+- Docker Desktop (for PostgreSQL + Redis)
+- A [Groq API key](https://console.groq.com) (free tier is enough to run this)
 
-### Steps
+### 1. Clone and install
 
-1. **Clone the repository**
 ```bash
 git clone https://github.com/Benjaminofili/ai_support_agent
 cd ai_support_agent
-```
-
-2. **Install dependencies**
-```bash
+python -m venv venv
+venv\Scripts\activate          # Windows; use `source venv/bin/activate` on macOS/Linux
 pip install -r requirements.txt
 ```
 
-3. **Set up environment**
+### 2. Start Postgres + Redis
+
+```bash
+docker-compose up -d
+```
+
+### 3. Configure environment
+
 ```bash
 cp .env.example .env
 ```
-Update the `.env` file with your actual secret keys and configuration settings.
 
-4. **Run migrations and start development**
+At minimum, set `SECRET_KEY` and `GROQ_API_KEY`. WhatsApp (Twilio) and email (SMTP/Resend) settings are optional — the app works with website chat alone if they're left blank.
+
+### 4. Run migrations and start the server
+
 ```bash
 python manage.py migrate
+python manage.py createsuperuser
 python manage.py runserver
 ```
-Note: Since this project uses Django, you'll need to run the development server using `python manage.py runserver`. Also, make sure to install the required dependencies using `pip` instead of `pnpm` as `pnpm` is used for Node.js projects.
 
-## ⚙️ Environment Variables
+### 5. Start the Celery worker (separate terminal)
 
-Create a `.env` file based on `.env.example`:
+Document processing and message handling run asynchronously, so Celery must be running for uploads and chat replies to complete:
 
-```makefile
-DEBUG=True
-SECRET_KEY=your-secret-key-generate-a-real-one
-ALLOWED_HOSTS=localhost,127.0.0.1
-DATABASE_URL=postgresql://postgres:postgres@db:5432/support_agent
-REDIS_URL=redis://redis:6379/0
-OPENAI_API_KEY=sk-your-openai-api-key
-GROQ_API_KEY=gsk_your-groq-api-key
-TWILIO_ACCOUNT_SID=your-twilio-account-sid
-TWILIO_AUTH_TOKEN=your-twilio-auth-token
-TWILIO_WHATSAPP_NUMBER=whatsapp:+14155238886
-RESEND_API_KEY=re_your_api_key_here
-RESEND_FROM_EMAIL=onboarding@resend.dev
-EMAIL_BACKEND=smtp
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=465
-EMAIL_USE_TLS=False
-EMAIL_USE_SSL=True
-EMAIL_HOST_USER=onboarding@resend.dev
-EMAIL_HOST_PASSWORD=xxx xxxx xxxx xxxx
-DEFAULT_FROM_EMAIL=onboarding@resend.dev
-DEFAULT_AI_MODEL=gpt-4o-mini
-EMBEDDING_MODEL=text-embedding-3-small
-MAX_TOKENS=1000
-CHUNK_SIZE=500
-CHUNK_OVERLAP=50
+```bash
+venv\Scripts\activate
+celery -A config worker --loglevel=info --pool=solo
 ```
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| DEBUG | Enables debug mode for Django | Yes |
-| SECRET_KEY | Secret key for Django | Yes |
-| ALLOWED_HOSTS | List of allowed hosts for Django | Yes |
-| DATABASE_URL | URL for PostgreSQL database | Yes |
-| REDIS_URL | URL for Redis | Yes |
-| OPENAI_API_KEY | API key for OpenAI | Yes |
-| GROQ_API_KEY | API key for Groq | Yes |
-| TWILIO_ACCOUNT_SID | Account SID for Twilio | Yes |
-| TWILIO_AUTH_TOKEN | Auth token for Twilio | Yes |
-| TWILIO_WHATSAPP_NUMBER | WhatsApp number for Twilio | Yes |
-| RESEND_API_KEY | API key for Resend | Yes |
-| RESEND_FROM_EMAIL | From email for Resend | Yes |
-| EMAIL_BACKEND | Email backend | Yes |
-| EMAIL_HOST | Email host | Yes |
-| EMAIL_PORT | Email port | Yes |
-| EMAIL_USE_TLS | Use TLS for email | Yes |
-| EMAIL_USE_SSL | Use SSL for email | Yes |
-| EMAIL_HOST_USER | Email host user | Yes |
-| EMAIL_HOST_PASSWORD | Email host password | Yes |
-| DEFAULT_FROM_EMAIL | Default from email | Yes |
-| DEFAULT_AI_MODEL | Default AI model | Yes |
-| EMBEDDING_MODEL | Embedding model | Yes |
-| MAX_TOKENS | Maximum tokens | Yes |
-| CHUNK_SIZE | Chunk size | Yes |
-| CHUNK_OVERLAP | Chunk overlap | Yes |
+Visit `http://localhost:8000` to sign up, create a company, upload a document, and start chatting. API docs are at `http://localhost:8000/api/docs`.
 
-## 📚 API Reference
-Unfortunately, the provided project data does not include explicit API route definitions. However, based on the dependencies and environment variables, we can infer that the API may include endpoints for:
+## Environment variables
 
-* Interacting with the OpenAI API using the `OPENAI_API_KEY`
-* Integrating with Twilio for WhatsApp messaging using the `TWILIO_ACCOUNT_SID` and `TWILIO_AUTH_TOKEN`
-* Sending emails using the `RESEND_API_KEY` and `EMAIL_BACKEND` settings
-* Utilizing Redis for caching or messaging using the `REDIS_URL`
+| Variable | Purpose | Required |
+|---|---|---|
+| `SECRET_KEY` | Django secret key | Yes |
+| `DEBUG` | Enables debug mode | Dev only |
+| `ALLOWED_HOSTS` | Comma-separated allowed hosts | Yes (prod) |
+| `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` | PostgreSQL connection | Yes |
+| `REDIS_URL` | Redis/Celery broker URL | Yes |
+| `GROQ_API_KEY` | Groq API key for chat responses | Yes (or OpenAI) |
+| `OPENAI_API_KEY` | Optional fallback LLM/embeddings provider | No |
+| `EMBEDDING_MODEL` | HuggingFace model for local embeddings | No (defaults to MiniLM-L6-v2) |
+| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_NUMBER` | WhatsApp integration | Only if using WhatsApp |
+| `RESEND_API_KEY`, `RESEND_FROM_EMAIL` | Backup email provider | No |
+| `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_HOST`, `EMAIL_PORT` | SMTP email sending | Only if using email |
+| `CHUNK_SIZE`, `CHUNK_OVERLAP`, `MAX_TOKENS`, `MAX_CONTEXT_CHUNKS` | RAG tuning knobs | No |
 
-To determine the actual API routes, please refer to the project's codebase and Django application configuration. The API documentation will depend on the specific views, models, and serializers defined in the project.
+Full list with defaults: [.env.example](.env.example).
 
-### Docker Setup
-To set up the Ai_support_agent project using Docker, follow these steps:
+## API overview
 
-#### Building the Image
-To build the Docker image, navigate to the project directory and run the following command:
+All API endpoints live under `/api/` and require a per-company Bearer token (`Authorization: Bearer <api_key>`, found on the company record). Interactive docs: `/api/docs`.
+
+```
+/api/knowledge/
+  POST   /documents/upload/          Upload a document (file or pasted text)
+  GET    /documents/                 List documents for the authenticated company
+  GET    /documents/{id}/            Get a document's processing status
+  DELETE /documents/{id}/            Delete a document and its chunks
+
+/api/chat/
+  POST   /message/                   Send a message, get an AI-generated reply
+  GET    /conversations/             List conversations
+  GET    /conversations/{id}/messages/   Get a conversation's message history
+
+/api/webhooks/
+  POST   /whatsapp/                  Twilio inbound WhatsApp webhook
+  POST   /email/                     Inbound email webhook
+
+/health/                             Database + Redis health check
+```
+
+## WhatsApp & email setup
+
+- **WhatsApp**: create a Twilio account, enable the WhatsApp Sandbox, and point its webhook at `https://<your-domain>/api/webhooks/whatsapp/`. For local development, expose your server with `ngrok http 8000` and use the generated HTTPS URL.
+- **Email**: configure `EMAIL_HOST_USER`/`EMAIL_HOST_PASSWORD` for outbound SMTP, and point your inbound email provider's webhook at `/api/webhooks/email/`.
+
+## Docker
+
 ```bash
+docker-compose up -d          # Postgres (pgvector) + Redis
 docker build -t ai_support_agent .
-```
-This command will create a Docker image with the name `ai_support_agent`.
-
-#### Running the Container
-To run the Docker container, use the following command:
-```bash
 docker run -p 8000:8000 ai_support_agent
 ```
-This will start a new container from the `ai_support_agent` image and map port 8000 on the host machine to port 8000 in the container.
 
-#### Docker Compose
-To use Docker Compose, navigate to the project directory and run the following command:
-```bash
-docker-compose up
-```
-This will start the containers defined in the `docker-compose.yml` file.
+`docker-compose.yml` runs the data layer only (Postgres + Redis); the Dockerfile builds the Django app image separately. See [docker_commands.txt](docker_commands.txt) for common day-to-day commands.
 
-#### Volume Mappings and Ports
-By default, the `docker-compose.yml` file maps the following volumes and ports:
-* Port 8000 on the host machine to port 8000 in the container
-* The project directory to the container's working directory
+## Testing
 
-Note: You can customize the volume mappings and ports by modifying the `docker-compose.yml` file.
-
-## 🧪 Testing
-To ensure the reliability and stability of the Ai_support_agent application, a test suite has been implemented. 
-
-* The presence of tests is indicated by the `✓ Tests` detected feature.
-* However, since the project uses `pip` as the package manager, the command to run tests is likely different from `pnpm test`, which is typically used with npm or yarn.
-* To run tests for this Django application, you would typically use a command such as `python manage.py test`. 
-
-Example:
 ```bash
 python manage.py test
+# or
+pytest
 ```
 
-## 🤝 Contributing
+The `tests/` directory covers the email flow (Gmail SMTP, inbound processing) and includes `factory-boy` factories for generating test companies, documents, and conversations.
 
-To contribute to the Ai_support_agent project, follow these steps:
+## Status
 
-1. **Fork the repository**: Create a copy of the repository in your own GitHub account.
-2. **Create a feature branch**: Use `git checkout -b feature/your-feature` to create a new branch for your changes.
-3. **Commit changes**: Use `git commit -m 'Add feature'` to commit your changes with a meaningful message.
-4. **Push changes**: Use `git push origin feature/your-feature` to push your changes to your fork.
-5. **Open a Pull Request**: Submit a pull request to the main repository, describing the changes you've made.
-
-Remember to test your changes using the existing test suite, as indicated by the presence of tests in the project. Additionally, ensure your changes are compatible with the project's Docker configuration.
-
-## 📄 License
-
-The Ai_support_agent project is licensed under the MIT License. This means that you are free to use, modify, and distribute the software as long as you include the original copyright and license notice in your distribution. 
-
-For more information, please refer to the [LICENSE](LICENSE) file in the repository.
+This started as a solo, time-boxed academic project (see the day-by-day log in [TECHNICAL_SPEC.md](TECHNICAL_SPEC.md)) and is under active iteration — expect some rough edges around production hardening (rate limiting, request validation, and multi-worker embedding model loading are good next steps for anyone extending it).
