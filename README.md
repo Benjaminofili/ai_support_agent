@@ -4,6 +4,25 @@ A multi-tenant, B2B customer support platform that answers customers using **onl
 
 Built with Django + django-ninja, backed by Postgres/pgvector for vector search and Celery/Redis for async processing. Designed to run on free-tier AI services: **Groq** for chat completions and a local **sentence-transformers** model for embeddings (no OpenAI billing required).
 
+## Sample request/response
+
+```bash
+curl -X POST http://localhost:8000/api/chat/message/ \
+  -H "Authorization: Bearer <company_api_key>" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What is your return policy?"}'
+```
+
+```json
+{
+  "conversation_id": "3f2e1a90-...-b6c1",
+  "session_id": "3f2e1a90-...-b6c1",
+  "response": "You can return any item within 30 days of purchase for a full refund, as long as it's unused and in its original packaging."
+}
+```
+
+Pass the returned `session_id` back as `session_id` on the next call to continue the same conversation with context.
+
 ## How it works
 
 ```
